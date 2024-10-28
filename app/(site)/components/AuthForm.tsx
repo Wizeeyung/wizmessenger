@@ -1,9 +1,15 @@
 "use client"
 
+import axios from 'axios';
 import Button from '@/app/components/Button';
 import Input from '@/app/components/inputs/Input';
 import React, { useCallback, useState } from 'react'
 import { FieldValues, SubmitHandler, useForm } from 'react-hook-form';
+import AuthSocialButton from './AuthSocialButton';
+import { BsGithub, BsGoogle } from 'react-icons/bs';
+import toast from 'react-hot-toast';
+import { signIn } from 'next-auth/react';
+
 
 type Variant = "LOGIN" | "REGISTER"
 
@@ -24,6 +30,7 @@ const AuthForm = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState:{
       errors
     }
@@ -41,10 +48,39 @@ const AuthForm = () => {
 
     if(variant === 'REGISTER'){
       //Axios register
+      axios.post('/api/register', data)
+      .then(()=>{ 
+        toast.success('Account created successfully')
+        reset()
+      }) // Display success message
+      .catch((error: any)=> 
+        {
+          const message = error.response?.data?.error || 'An error occurred';
+          toast.error(message); 
+        })// Display the error from backend))
+      .finally(()=> setIsLoading(false))
+      
     }
 
     if(variant === 'LOGIN'){
       //Axios login
+      signIn('credentials',{
+        ...data,
+        redirect: false
+      }).then((callback)=>{
+        if(callback?.error){
+          toast.error('Invalid credentials')
+        }
+
+        if(callback?.ok && !callback?.error){
+          toast.success('Logged in successfully')
+          reset()
+        }
+
+        
+        
+      })
+      .finally(()=>setIsLoading(false))
     }
 
   }
@@ -54,6 +90,18 @@ const AuthForm = () => {
     setIsLoading(true);
 
     //Next auth Social sign in
+    signIn(action, {
+      redirect: false
+    }).then((callback)=>{
+      if(callback?.error){
+        toast.error('An error occurred')
+      }
+
+      if(callback?.ok && !callback?.error){
+        toast.success('Logged in successfully')
+      }
+
+    }).finally(()=>setIsLoading(false))
   }
 
   return (
@@ -144,8 +192,28 @@ const AuthForm = () => {
             </div>
           </div>
 
-          <div className='mt-6 flex gap-2'>
+          {/* social buttons */}
+          <div className='mt-6 flex flex-col gap-2'>
+            <AuthSocialButton 
+              icon={BsGithub}
+              label='Github'
+              onClick={()=>socialAction('github')}
+            />
 
+            <AuthSocialButton 
+              icon={BsGoogle}
+              label='Google'
+              onClick={()=>socialAction('google')}
+            />
+          </div>
+
+          <div className='flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500'>
+            <div>
+              {variant === 'LOGIN' ? 'New to Messenger?' : 'Already have an account?'}
+            </div>
+            <div onClick={toggleVariant} className='underline cursor-pointer'>
+              {variant === 'LOGIN'? 'Create an account' : 'Login'}
+            </div>
           </div>
 
         </div>
