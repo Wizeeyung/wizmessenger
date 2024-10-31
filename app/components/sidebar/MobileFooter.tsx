@@ -11,7 +11,7 @@ const MobileFooter = () => {
   const {isOpen} = useConversation();
 
   if(isOpen){
-    return null;
+    return null; 
   }
 
   return (
@@ -29,7 +29,7 @@ const MobileFooter = () => {
     '>
       {routes.map((route)=>(
         <MobileItem 
-          key={route.href}
+          key={route.label}
           href={route.href}
           active={route.active}
           icon={route.icon}

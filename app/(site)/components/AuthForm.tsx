@@ -26,7 +26,7 @@ const AuthForm = () => {
     if(session?.status === 'authenticated'){
       router.push('/users')
     }
-  },[session?.status])
+  },[session?.status, router])
 
   const toggleVariant = useCallback(()=>{
     if(variant === 'LOGIN'){
