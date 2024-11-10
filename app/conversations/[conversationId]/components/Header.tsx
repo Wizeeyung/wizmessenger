@@ -6,6 +6,7 @@ import { Conversation, User } from '@prisma/client'
 import Link from 'next/link'
 import React, { useMemo } from 'react'
 import { HiChevronLeft } from 'react-icons/hi'
+import { HiEllipsisHorizontal } from 'react-icons/hi2'
 
 interface HeaderProps{
   conversation: Conversation & {
@@ -68,6 +69,17 @@ const Header: React.FC<HeaderProps> = ({
         </div>
 
       </div>
+
+      <HiEllipsisHorizontal 
+        size={32}
+        onClick={()=> {}}
+        className='
+          text-sky-500
+          cursor-pointer
+          hover:text-sky-600
+          transition
+        '
+      />
     </div>
   )
 }
